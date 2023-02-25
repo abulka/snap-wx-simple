@@ -15,5 +15,9 @@ if FOUND_RELMGR:
 else:
     import wx.lib.ogl as RelationshipManager
 
-print('done', RelationshipManager)
+def main():
+    print('done', RelationshipManager)
+
+if __name__ == '__main__':
+    main()
 

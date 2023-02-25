@@ -134,9 +134,12 @@ async def main_async_modern():
     app.SetTopWindow(frame)
     await app.MainLoop()
 
-if __name__ == "__main__":
+def run():
     if ASYNC_VERSION:
         # main_async()
         asyncio.run(main_async_modern())
     else:
         main()
+
+if __name__ == "__main__":
+    run()
