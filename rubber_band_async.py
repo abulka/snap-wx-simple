@@ -8,14 +8,14 @@ from asyncio.events import get_event_loop
 
 ASYNC_VERSION = True
 
-import gui
-print("gui.__file__", gui.__file__)
-from gui.settings import FOUND_RELMGR
+# import gui
+# print("gui.__file__", gui.__file__)
+# from gui.settings import FOUND_RELMGR
 
-if FOUND_RELMGR:
-    from relmgr.relationship_manager import RelationshipManager
-else:
-    import wx.lib.ogl as ogl
+# if FOUND_RELMGR:
+#     from relmgr.relationship_manager import RelationshipManager
+# else:
+#     import wx.lib.ogl as ogl
 
 
 class SelectableFrame(wx.Frame):
