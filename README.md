@@ -1,12 +1,17 @@
-# wxpython-actions-multi
+# snap-wx-simple
 
-Version: 1.94
+Building a wxpython app using snapcraft
 
-Non beta - real
-
-Latest versions can downloaded from https://github.com/abulka/wxpython-actions-multi/releases/latest
+also...
 
 An experiment re checking out not only this project, but another project, then building an exe from combining the two.
+
+Then building with snapcraft using the new simpler way which relies on leveraging setup.py
+
+
+
+
+# OLD NOTES FROM ANOTHER PROJECT - IGNORE
 
 On github, If we check out this project into `mainproj` then the other project into 
 

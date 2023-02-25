@@ -1,28 +1,59 @@
-name: rubberband
-version: git
-summary: 'rubberband test'
+name: snap-wx-simple
+summary: A simple wxpython program
 description: |
-  rubber ha ha
-  and just testing this
+      rubber band async wxpython - drag a rubber band around the screen
 
-grade: stable # devel # must be 'stable' to release into candidate/stable channels
-confinement: strict # use 'strict' once you have the right plugs and slots
-base: core22
+version: git
+grade: stable
+confinement: devmode
+base: core20
+architectures:
+  - build-on: [arm64, armhf, amd64]
+
+# Invoke the command with snap-py-simple
+# Invoke the python version with snap-py-simple.python-v
 apps:
-    rubber:
-        command: python3 $SNAP/rubber_band_async.py
-        extensions: [gnome]
-        plugs: [unity7, audio-playback, home, network]
+  snap-wx-simple:
+    command: bin/rubber
+    plugs: [home, network, network-bind, removable-media]
+  simple:
+    command: bin/simple
+  python-v:
+      command: bin/python3 -V
+
 parts:
-  copy-stuff:
-    plugin: dump
-    source: ./src
-  rubber:
+  build-the-python-stuff-please:
     plugin: python
-    source: ./src
-    python-packages:
-        - https://extras.wxpython.org/wxPython4/extras/linux/gtk3/ubuntu-22.04/wxPython-4.2.0-cp310-cp310-linux_x86_64.whl
-        - wxasync
-    python-requirements:
-        - /root/project/requirements.txt
+    source: .
+
+
+
+
+# name: rubberband
+# version: git
+# summary: 'rubberband test'
+# description: |
+#   rubber ha ha
+#   and just testing this
+
+# grade: stable # devel # must be 'stable' to release into candidate/stable channels
+# confinement: strict # use 'strict' once you have the right plugs and slots
+# base: core22
+# apps:
+#     rubber:
+#         command: python3 $SNAP/rubber_band_async.py
+#         extensions: [gnome]
+#         plugs: [unity7, audio-playback, home, network]
+# parts:
+#   copy-stuff:
+#     plugin: dump
+#     source: ./src
+#   rubber:
+#     plugin: python
+#     source: ./src
+#     python-packages:
+#         - https://extras.wxpython.org/wxPython4/extras/linux/gtk3/ubuntu-22.04/wxPython-4.2.0-cp310-cp310-linux_x86_64.whl
+#         - wxasync
+#     python-requirements:
+#         - /root/project/requirements.txt
 
