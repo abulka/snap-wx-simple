@@ -1,0 +1,119 @@
+# To trigger the workflow on each push, branches: [ main ]
+# To trigger the workflow on push of tags beginning with v, tags: ['v*']
+# then
+# git tag v1.0
+# git push origin v1.0
+# or
+# git tag -a v1.0
+# git push --follow-tags
+# 
+# If using tbump (tbump willl do a push of the annotated tag it creates, but not a --follow-tags, which is still ok)
+# tbump 1.77                    (specify what the next version is, current version stored in tbump.toml)
+# Diagnostic tbump uses:
+# tbump 1.77 --only-patch       (no git stuff)
+# tbump 1.77 --no-push          (do git stuff, but don't do the final push)
+
+name: multi project wxpython app built on mac
+on:
+  push:
+    # branches: [ main ]
+    tags: ['v*']
+jobs:
+  build-for-mac:
+    runs-on: macos-latest
+    steps:
+
+    # - uses: actions/checkout@v2
+
+    - name: Check out current repo into a subdir
+      uses: actions/checkout@v2
+      with:
+        path: subdir/mainproj/
+
+    - name: Check out my other public repo
+      uses: actions/checkout@v2
+      with:
+        repository: abulka/relationship-manager
+        path: relationship-manager/
+
+    - name: Check out my other private repo
+      uses: actions/checkout@v2
+      with:
+        repository: abulka/ogl2
+        token: ${{ secrets.my_pat }}
+        path: ogl2/
+
+    - name: View resulting directory structure
+      run: |
+        ls -l
+        ls -l subdir/
+        ls -l subdir/mainproj/
+        ls -l relationship-manager/
+        ls -l ogl2/
+
+    - name: Setup Python please
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.8    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install wxpython
+        pip install pyinstaller
+        pip install -r subdir/mainproj/requirements.txt
+    - name: Run Python and print version_info
+      run: |
+        python -c "import sys; print(sys.version_info)"
+        uname -a
+
+    - name: runsimple
+      run: |
+        cd subdir/mainproj/
+        ./bin/run-simple
+
+    - name: Build executable using Pyinstaller
+      run: |
+        cd subdir/mainproj/
+        pyinstaller rubber_band_async_custom.spec
+        ls -l dist/
+
+    - name: Save generated executable file as an artifact
+      uses: actions/upload-artifact@v2
+      with:
+        # The act of downloading zips up the artifact and adds the .zip to the downloaded file
+        name: rubber-band-mac
+        path: subdir/mainproj/dist/
+
+    # - name: Release
+    #   uses: softprops/action-gh-release@v1
+    #   if: startsWith(github.ref, 'refs/tags/')
+    #   env:
+    #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    #   with:
+    #       files: subdir/mainproj/dist/*
+
+  # After the matrix (if any) is complete, have to 'download' all the assets in order to release them
+  release:
+      needs: [build-for-mac]
+      runs-on: ubuntu-latest
+      steps:
+        - name: Get the tag name
+          shell: bash
+          run: echo "TAG=${GITHUB_REF/refs\/tags\//}" >> $GITHUB_ENV
+
+        - uses: actions/download-artifact@v2
+          with:
+            name: rubber-band-mac  # to this filename
+            path: rubber-band-mac  # from this artifact name
+        - run: |
+            ls -l
+            mv rubber-band-mac rubber-band-mac-${{ env.TAG }}
+            ls -l
+            ls -l rubber-band-mac*
+        - name: Release
+          uses: softprops/action-gh-release@v1
+          env:
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          with:
+            files: |
+              rubber-band-mac*

@@ -1,0 +1,28 @@
+name: rubberband
+version: git
+summary: 'rubberband test'
+description: |
+  rubber ha ha
+  and just testing this
+
+grade: stable # devel # must be 'stable' to release into candidate/stable channels
+confinement: strict # use 'strict' once you have the right plugs and slots
+base: core22
+apps:
+    rubber:
+        command: python3 $SNAP/rubber_band_async.py
+        extensions: [gnome]
+        plugs: [unity7, audio-playback, home, network]
+parts:
+  copy-stuff:
+    plugin: dump
+    source: ./src
+  rubber:
+    plugin: python
+    source: ./src
+    python-packages:
+        - https://extras.wxpython.org/wxPython4/extras/linux/gtk3/ubuntu-22.04/wxPython-4.2.0-cp310-cp310-linux_x86_64.whl
+        - wxasync
+    python-requirements:
+        - /root/project/requirements.txt
+

@@ -1,0 +1,11 @@
+requests
+
+# needed for wxpython install to succeed ?
+attrdict3
+
+#wxpython
+# actually the way to install wxpython on linux is
+#pip install -U -f https://extras.wxpython.org/wxPython4/extras/linux/gtk3/ubuntu-22.04 wxPython
+#sudo apt-get install libsdl2-mixer-2.0-0 libsdl2-image-2.0-0 libsdl2-2.0-0
+
+wxasync

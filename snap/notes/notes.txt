@@ -1,0 +1,17 @@
+Executed: build rubber                                                                                                                
+Executed: stage copy-stuff                                                                                                            
+Executed: stage gnome/sdk                                                                                                             
+Executed: stage rubber                                                                                                                
+Executed: prime copy-stuff                                                                                                            
+Executed: prime gnome/sdk                                                                                                             
+Executed: prime rubber                                                                                                                
+Executed parts lifecycle                                                                                                              
+Version has been set to 'v1.94+git4.0dbf56f'                                                                                          
+Generated snap metadata                                                                                                               
+Version has been set to 'v1.94+git4.0dbf56f'                                                                                          
+Cannot pack snap file: Command '['snap', 'pack', '--filename', 'rubberband_v1.94+git4.0dbf56f_amd64.snap', '--compression', 'xz', PosixPath('/root/prime'), PosixPath('/root/project')]' returned non-zero exit status 1. (2023/02/23 11:15:45.362729 container.go:215: in snap "rubberband": path "python3" does not exist
+error: cannot pack "/root/prime": snap is unusable due to missing files)                
+Failed to execute pack in instance.                                                                                                   
+Full execution log: '/home/andy/.cache/snapcraft/log/snapcraft-20230223-055147.305643.log'  
+
+

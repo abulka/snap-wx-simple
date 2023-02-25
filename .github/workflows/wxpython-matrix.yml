@@ -1,0 +1,146 @@
+# To trigger the workflow on each push, branches: [ main ]
+# To trigger the workflow on push of tags beginning with v, tags: ['v*']
+# then
+# git tag v1.0
+# git push origin v1.0
+# or
+# git tag -a v1.0
+# git push --follow-tags
+# 
+# If using tbump (tbump willl do a push of the annotated tag it creates, but not a --follow-tags, which is still ok)
+# tbump 1.77                    (specify what the next version is, current version stored in tbump.toml)
+# Diagnostic tbump uses:
+# tbump 1.77 --only-patch       (no git stuff)
+# tbump 1.77 --no-push          (do git stuff, but don't do the final push)
+
+name: multi project wxpython app built on mac
+on:
+  push:
+    # branches: [ main ]
+    tags: ['v*', 'pre*']
+jobs:
+  build-all-os:
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      matrix:
+        os: [macos-latest, windows-latest]
+
+    steps:
+
+    # - uses: actions/checkout@v2
+
+    - name: Check out current repo into a subdir
+      uses: actions/checkout@v2
+      with:
+        path: subdir/mainproj/
+
+    - name: Check out my other public repo
+      uses: actions/checkout@v2
+      with:
+        repository: abulka/relationship-manager
+        path: relationship-manager/
+
+    - name: Check out my other private repo
+      uses: actions/checkout@v2
+      with:
+        repository: abulka/ogl2
+        token: ${{ secrets.my_pat }}
+        path: ogl2/
+
+    - name: View resulting directory structure
+      shell: bash
+      run: |
+        ls -l
+        ls -l subdir/
+        ls -l subdir/mainproj/
+        ls -l relationship-manager/
+        ls -l ogl2/
+
+    - name: Setup Python please
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.8    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install wxpython
+        pip install pyinstaller
+        pip install -r subdir/mainproj/requirements.txt
+    - name: Run Python and print version_info
+      run: python -c "import sys; print(sys.version_info)"
+
+    - name: runsimple
+      shell: bash
+      run: |
+        cd subdir/mainproj/
+        ./bin/run-simple
+
+    - name: Build executable using Pyinstaller
+      shell: bash
+      run: |
+        cd subdir/mainproj/
+        pyinstaller rubber_band_async_custom.spec
+        cp README.md dist/Readme.txt
+        ls -l dist/
+
+    - name: Get the tag name
+      shell: bash
+      run: echo "TAG=${GITHUB_REF/refs\/tags\//}" >> $GITHUB_ENV
+
+    - name: Save generated executable file as an artifact
+      uses: actions/upload-artifact@v2
+      with:
+        # The act of downloading zips up the artifact and adds the .zip to the downloaded file
+        path: subdir/mainproj/dist/
+        name: rubber-band-${{ matrix.os }}-${{ env.TAG }}
+
+
+  # After the matrix (if any) is complete, have to 'download' all the assets in order to release them
+  release:
+      needs: [build-all-os]
+      runs-on: ubuntu-latest
+      steps:
+
+        - name: Get the tag name  # env vars do not survive from previous jobs
+          shell: bash
+          run: echo "TAG=${GITHUB_REF/refs\/tags\//}" >> $GITHUB_ENV
+
+        - uses: actions/download-artifact@v2
+          with:
+            name: rubber-band-macos-latest-${{ env.TAG }}  # from this artifact name
+            path: rubber-band-macos-${{ env.TAG }}  # to this filename or dir
+
+        - uses: actions/download-artifact@v2
+          with:
+            name: rubber-band-windows-latest-${{ env.TAG }}  # from this artifact name
+            path: rubber-band-windows-${{ env.TAG }}  # to this filename or dir
+
+        - run: |
+            ls -l
+            ls -l rubber-band-macos-${{ env.TAG }}
+
+            # fix loss of executable permission issue https://github.com/actions/upload-artifact#maintaining-file-permissions-and-case-sensitive-files 
+            chmod +x rubber-band-macos-${{ env.TAG }}/rubber_band_async.app/Contents/MacOS/rubber_band_async
+            
+            # remove the useless exe but leave the .app
+            rm rubber-band-macos-${{ env.TAG }}/rubber_band_async
+            
+        - name: Zip up the artifacts
+          run: |
+            zip -r rubber-band-macos-${{ env.TAG }}.zip rubber-band-macos-${{ env.TAG }}
+            zip -r rubber-band-windows-${{ env.TAG }}.zip rubber-band-windows-${{ env.TAG }}
+            echo "TAG is ${{ env.TAG }}"
+            echo "is a v release ${{ startsWith(env.TAG, 'v') }}"
+            echo "is a xx release ${{ startsWith(env.TAG, 'xx') }}"
+
+        - name: Release
+          uses: softprops/action-gh-release@v1
+          env:
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          with:
+            # draft: true
+            draft: ${{ !startsWith(env.TAG, 'v') }}
+            files: |
+              rubber-band-macos-${{ env.TAG }}.zip
+              rubber-band-windows-${{ env.TAG }}.zip
