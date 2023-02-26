@@ -69,3 +69,11 @@ parts:
       # - libpulse0-dev  # libpulse0-dev' was not found..
       - libpulse-dev
       - pulseaudio
+      # - libcanberra-gtk-module   # apparently you can't get rid of the canberra warning    
+    after: [libpulsecommon]
+
+parts:
+  libpulsecommon:
+    plugin: nil
+    stage-packages:
+      - libpulsecommon
