@@ -71,6 +71,12 @@ class SelectableFrame(wx.Frame):
         # dbg(self.c2)
 
         dc = wx.PaintDC(self.panel)
+
+        # Create a new font with the desired properties
+        font = wx.Font(14, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL)
+        # Set the font on the dc object
+        dc.SetFont(font)
+
         dc.SetTextForeground((204, 102, 0))  # dark orange
         dc.DrawText("right click once to start timer", 2, 2)
 
