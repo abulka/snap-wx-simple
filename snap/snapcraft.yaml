@@ -59,3 +59,16 @@ parts:
       - libpulse0
       - libpulse-dev
       - pulseaudio
+
+  my-font-part:
+    plugin: nil
+    stage-packages:
+      - fonts-noto-color-emoji
+      - bdf-unifont
+      - fonts-dejavu
+      - fontconfig
+      - fontconfig-config
+      - fonts-liberation
+      - ttf-ubuntu-font-family
+      - ttf-mscorefonts-installer
+  

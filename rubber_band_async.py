@@ -1,3 +1,5 @@
+# -*- encoding: utf-8 -*-
+
 import wx
 # from pydbg import dbg
 import time
