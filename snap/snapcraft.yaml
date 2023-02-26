@@ -10,12 +10,10 @@ base: core20
 architectures:
   - build-on: [arm64, armhf, amd64]
 
-# Invoke the command with snap-py-simple
-# Invoke the python version with snap-py-simple.python-v
 apps:
   snap-wx-simple:
     command: bin/rubber
-    plugs: [home, network, network-bind, removable-media]
+    plugs: [home, network, network-bind, removable-media, pulseaudio]
   python-v:
       command: bin/python3 -V
 
@@ -58,22 +56,6 @@ parts:
       - nsight-systems
       - nxagent
       - primus-libs
-      # - libpulsecommon  # snapcraft cannot find this
-      # - libpulse-mainloop-glib0
-      # - libpulse-mainloop-glib0-dbg
-      # - libpulse-mainloop-glib0-dbgsym
-      # - libpulse-mainloop-glib0-dev
-      # add libpulse to the stage-packages, libpulse0 already contains libpulsecommon
       - libpulse0
-      # try these too
-      # - libpulse0-dev  # libpulse0-dev' was not found..
       - libpulse-dev
       - pulseaudio
-      # - libcanberra-gtk-module   # apparently you can't get rid of the canberra warning    
-    after: [libpulsecommon]
-
-parts:
-  libpulsecommon:
-    plugin: nil
-    stage-packages:
-      - libpulsecommon
