@@ -19,6 +19,9 @@ apps:
   python-v:
       command: bin/python3 -V
 
+environment:
+  LD_LIBRARY_PATH: $LD_LIBRARY_PATH:/snap/snap-wx-simple/x4/usr/lib/x86_64-linux-gnu/pulseaudio
+
 parts:
   build-the-python-stuff-please:
     plugin: python
@@ -26,8 +29,6 @@ parts:
     python-packages:
         - https://extras.wxpython.org/wxPython4/extras/linux/gtk3/ubuntu-20.04/wxPython-4.2.0-cp38-cp38-linux_x86_64.whl
         - wxasync
-    # The 'build-the-python-stuff-please' part is missing libraries that are not included in the snap or base. They can be satisfied by adding the following entry for this part
-    # This part is missing libraries that cannot be satisfied with any available stage-packages known to snapcraft:
     stage-packages:
       - libcairo2
       - libfontconfig1
@@ -57,34 +58,14 @@ parts:
       - nsight-systems
       - nxagent
       - primus-libs
+      # - libpulsecommon  # snapcraft cannot find this
+      # - libpulse-mainloop-glib0
+      # - libpulse-mainloop-glib0-dbg
+      # - libpulse-mainloop-glib0-dbgsym
+      # - libpulse-mainloop-glib0-dev
+      # add libpulse to the stage-packages, libpulse0 already contains libpulsecommon
       - libpulse0
-
-
-    # name: rubberband
-    # version: git
-    # summary: 'rubberband test'
-    # description: |
-    #   rubber ha ha
-    #   and just testing this
-
-    # grade: stable # devel # must be 'stable' to release into candidate/stable channels
-    # confinement: strict # use 'strict' once you have the right plugs and slots
-    # base: core22
-    # apps:
-    #     rubber:
-    #         command: python3 $SNAP/rubber_band_async.py
-    #         extensions: [gnome]
-    #         plugs: [unity7, audio-playback, home, network]
-    # parts:
-    #   copy-stuff:
-    #     plugin: dump
-    #     source: ./src
-    #   rubber:
-    #     plugin: python
-    #     source: ./src
-    #     python-packages:
-    #         - https://extras.wxpython.org/wxPython4/extras/linux/gtk3/ubuntu-22.04/wxPython-4.2.0-cp310-cp310-linux_x86_64.whl
-    #         - wxasync
-    #     python-requirements:
-    #         - /root/project/requirements.txt
-
+      # try these too
+      # - libpulse0-dev  # libpulse0-dev' was not found..
+      - libpulse-dev
+      - pulseaudio
