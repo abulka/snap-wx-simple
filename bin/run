@@ -1,0 +1,3 @@
+cd src
+PYTHON=python3
+PYTHONPATH="../../../relationship-manager/" $PYTHON rubber_band_async.py
