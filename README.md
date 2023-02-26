@@ -8,6 +8,8 @@ An experiment re checking out not only this project, but another project, then b
 
 Then building with snapcraft using the new simpler way which relies on leveraging setup.py
 
+# scraps
+
 + snapcraftctl prime
 The 'build-the-python-stuff-please' part is missing libraries that are not included in the snap or base. They can be satisfied by adding the following entry for this part
 stage-packages:
@@ -39,6 +41,28 @@ This part is missing libraries that cannot be satisfied with any available stage
 - libwayland-egl.so.1
 - libwebkit2gtk-4.0.so.37
 These dependencies can be satisfied via additional parts or content sharing. Consider validating configured filesets if this dependency was built.
+
+
+## scraps
+
+inside the container I found the pulse library
+sudo find / -name libpulsecommon-13.99.so
+/root/prime/usr/lib/x86_64-linux-gnu/pulseaudio/libpulsecommon-13.99.so
+/root/stage/usr/lib/x86_64-linux-gnu/pulseaudio/libpulsecommon-13.99.so
+/root/parts/build-the-python-stuff-please/install/usr/lib/x86_64-linux-gnu/pulseaudio/libpulsecommon-13.99.so
+
+/usr/lib/x86_64-linux-gnu/pulseaudio/libpulsecommon-13.99.so
+/x4/usr/lib/x86_64-linux-gnu/pulseaudio
+
+
+environment:
+  LD_LIBRARY_PATH: $LD_LIBRARY_PATH:/snap/snap-wx-simple/x4/usr/lib/x86_64-linux-gnu/pulseaudio
+environment:
+  LD_LIBRARY_PATH: $LD_LIBRARY_PATH:/snap/snap-wx-simple/current/usr/lib/x86_64-linux-gnu/pulseaudio
+                                                                /usr/lib/x86_64-linux-gnu/pulseaudio/libpulsecommon-13.99.so
+
+
+
 
 
 

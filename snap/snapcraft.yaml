@@ -18,7 +18,7 @@ apps:
       command: bin/python3 -V
 
 environment:
-  LD_LIBRARY_PATH: $LD_LIBRARY_PATH:/snap/snap-wx-simple/x4/usr/lib/x86_64-linux-gnu/pulseaudio
+  LD_LIBRARY_PATH: $LD_LIBRARY_PATH:/snap/snap-wx-simple/current/usr/lib/x86_64-linux-gnu/pulseaudio
 
 parts:
   build-the-python-stuff-please:
