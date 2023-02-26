@@ -8,6 +8,37 @@ An experiment re checking out not only this project, but another project, then b
 
 Then building with snapcraft using the new simpler way which relies on leveraging setup.py
 
++ snapcraftctl prime
+The 'build-the-python-stuff-please' part is missing libraries that are not included in the snap or base. They can be satisfied by adding the following entry for this part
+stage-packages:
+- libpng16-16
+This part is missing libraries that cannot be satisfied with any available stage-packages known to snapcraft:
+- libEGL.so.1
+- libGL.so.1
+- libSDL2-2.0.so.0
+- libSM.so.6
+- libX11.so.6
+- libXtst.so.6
+- libXxf86vm.so.1
+- libcairo.so.2
+- libfontconfig.so.1
+- libgdk-3.so.0
+- libgdk_pixbuf-2.0.so.0
+- libgstreamer-1.0.so.0
+- libgstvideo-1.0.so.0
+- libgtk-3.so.0
+- libjavascriptcoregtk-4.0.so.18
+- libjpeg.so.8
+- libnotify.so.4
+- libpango-1.0.so.0
+- libpangocairo-1.0.so.0
+- libpangoft2-1.0.so.0
+- libpcre2-32.so.0
+- libtiff.so.5
+- libwayland-client.so.0
+- libwayland-egl.so.1
+- libwebkit2gtk-4.0.so.37
+These dependencies can be satisfied via additional parts or content sharing. Consider validating configured filesets if this dependency was built.
 
 
 
