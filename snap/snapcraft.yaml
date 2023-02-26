@@ -29,38 +29,34 @@ parts:
     # The 'build-the-python-stuff-please' part is missing libraries that are not included in the snap or base. They can be satisfied by adding the following entry for this part
     # This part is missing libraries that cannot be satisfied with any available stage-packages known to snapcraft:
     stage-packages:
-      - libpng16-16
-      - libEGL.so.1
-      - libGL.so.1
-      - libSDL2-2.0.so.0
-      - libSM.so.6
-      - libX11.so.6
-      # - libXtst.so.6
-      - libxtst6
-      - libXxf86vm.so.1
-      # - libcairo.so.2
       - libcairo2
-      - libfontconfig.so.1
-      - libgdk-3.so.0
-      - libgdk_pixbuf-2.0.so.0
-      - libgstreamer-1.0.so.0
-      - libgstvideo-1.0.so.0
-      - libgtk-3.so.0
-      - libjavascriptcoregtk-4.0.so.18
-      # - libjpeg.so.8
+      - libfontconfig1
+      - cruft-common
+      - libgl1
+      - libgstreamer-plugins-base1.0-0
+      - libgstreamer1.0-0
+      - libgstreamer1.0-dev
+      - libgtk-3-0
+      - libjavascriptcoregtk-4.0-18
       - libjpeg-turbo8
-      - libnotify.so.4
-      - libpango-1.0.so.0
-      # - libpangocairo-1.0.so.0
+      - libnotify4
+      - libpango-1.0-0
       - libpangocairo-1.0-0
-      - libpangoft2-1.0.so.0
-      - libpcre2-32.so.0
-      - libtiff.so.5
-      - libwayland-client.so.0
-      - libwayland-egl.so.1
-      - libwebkit2gtk-4.0.so.37
-
-        
+      - libpangoft2-1.0-0
+      - libpcre2-32-0
+      - libpng16-16
+      - libsdl2-2.0-0
+      - libsm6
+      - libtiff5
+      - libwayland-client0
+      - libwayland-egl1
+      - libwebkit2gtk-4.0-37
+      - libx11-6
+      - libxtst6
+      - libxxf86vm1
+      - nsight-systems
+      - nxagent
+      - primus-libs
 
 
 
