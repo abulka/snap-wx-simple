@@ -64,7 +64,6 @@ parts:
     plugin: nil
     stage-packages:
       - fonts-noto-color-emoji
-      - bdf-unifont
       - fonts-dejavu
       - fontconfig
       - fontconfig-config
