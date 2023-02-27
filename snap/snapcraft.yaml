@@ -8,12 +8,20 @@ grade: stable
 confinement: devmode
 base: core20
 architectures:
-  - build-on: [arm64, armhf, amd64]
+  # - build-on: [arm64, armhf, amd64]
+  - build-on: [amd64]
 
 apps:
   snap-wx-simple:
     command: bin/rubber
     plugs: [home, network, network-bind, removable-media, pulseaudio]
+  genx:
+    # another guess, more plugs, and set up environment
+    command: bin/rubber
+    plugs: [desktop, x11, audio-playback, desktop-legacy, unity7, network, home, gsettings, opengl]
+    environment:
+      LANG: en_US.UTF-8
+      LC_ALL: en_US.UTF-8    
   python-v:
       command: bin/python3 -V
 
@@ -25,6 +33,7 @@ parts:
     plugin: python
     source: .
     python-packages:
+        # - wheel # genx does this
         - https://extras.wxpython.org/wxPython4/extras/linux/gtk3/ubuntu-20.04/wxPython-4.2.0-cp38-cp38-linux_x86_64.whl
         - wxasync
     stage-packages:
@@ -33,7 +42,7 @@ parts:
       - cruft-common
       - libgl1
       - libgstreamer-plugins-base1.0-0
-      - libgstreamer1.0-0
+      - libgstreamer1.0-0 #
       - libgstreamer1.0-dev
       - libgtk-3-0
       - libjavascriptcoregtk-4.0-18
@@ -44,14 +53,14 @@ parts:
       - libpangoft2-1.0-0
       - libpcre2-32-0
       - libpng16-16
-      - libsdl2-2.0-0
-      - libsm6
+      - libsdl2-2.0-0 #
+      - libsm6 #
       - libtiff5
       - libwayland-client0
       - libwayland-egl1
-      - libwebkit2gtk-4.0-37
+      - libwebkit2gtk-4.0-37 # 
       - libx11-6
-      - libxtst6
+      - libxtst6 #
       - libxxf86vm1
       - nsight-systems
       - nxagent
@@ -59,8 +68,27 @@ parts:
       - libpulse0
       - libpulse-dev
       - pulseaudio
+      # try these done by genx, lets try them
+      # - libegl1
+      # - libpsm2-2-compat
+      # - libgomp1-amd64-cross
+      # - libtbb2
+    # this after step done by genx, maybe it will help with the font problem
+    # after: [desktop-gnome-platform]
+
+  desktop-gnome-platform:
+    source: https://github.com/ubuntu/snapcraft-desktop-helpers.git
+    source-subdir: gtk
+    plugin: make
+    make-parameters: ["FLAVOR=gtk3"]
+    build-packages:
+      - gcc
+    override-build: |
+      snapcraftctl build
+      mkdir -pv $SNAPCRAFT_PART_INSTALL/gnome-platform
 
   my-font-part:
+    # this part doesn't help fix the square rectangle problem
     plugin: nil
     stage-packages:
       - fonts-noto-color-emoji
@@ -71,3 +99,21 @@ parts:
       - ttf-ubuntu-font-family
       - ttf-mscorefonts-installer
   
+# this done by genx, maybe it will help with the font problem
+plugs:
+  gnome-3-38-2004:
+    interface: content
+    target: $SNAP/gnome-platform
+    default-provider: gnome-3-38-2004
+  gtk-3-themes:
+    interface: content
+    target: $SNAP/data-dir/themes
+    default-provider: gtk-common-themes
+  icon-themes:
+    interface: content
+    target: $SNAP/data-dir/icons
+    default-provider: gtk-common-themes
+  sound-themes:
+    interface: content
+    target: $SNAP/data-dir/sounds
+    default-provider: gtk-common-themes
