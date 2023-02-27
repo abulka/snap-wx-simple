@@ -15,13 +15,6 @@ apps:
   snap-wx-simple:
     command: bin/rubber
     plugs: [home, network, network-bind, removable-media, pulseaudio]
-  # genx:
-  #   # another guess, more plugs, and set up environment
-  #   command: bin/rubber
-  #   plugs: [desktop, x11, audio-playback, desktop-legacy, unity7, network, home, gsettings, opengl]
-  #   environment:
-  #     LANG: en_US.UTF-8
-  #     LC_ALL: en_US.UTF-8    
   python-v:
       command: bin/python3 -V
 
@@ -69,23 +62,23 @@ parts:
       - libpulse-dev
       - pulseaudio
       # try these done by genx, lets try them
-      # - libegl1
-      # - libpsm2-2-compat
-      # - libgomp1-amd64-cross
-      # - libtbb2
+      - libegl1
+      - libpsm2-2-compat
+      - libgomp1-amd64-cross
+      - libtbb2
     # this after step done by genx, maybe it will help with the font problem
-    # after: [desktop-gnome-platform]
+    after: [desktop-gnome-platform]
 
-  # desktop-gnome-platform:
-  #   source: https://github.com/ubuntu/snapcraft-desktop-helpers.git
-  #   source-subdir: gtk
-  #   plugin: make
-  #   make-parameters: ["FLAVOR=gtk3"]
-  #   build-packages:
-  #     - gcc
-  #   override-build: |
-  #     snapcraftctl build
-  #     mkdir -pv $SNAPCRAFT_PART_INSTALL/gnome-platform
+  desktop-gnome-platform:
+    source: https://github.com/ubuntu/snapcraft-desktop-helpers.git
+    source-subdir: gtk
+    plugin: make
+    make-parameters: ["FLAVOR=gtk3"]
+    build-packages:
+      - gcc
+    override-build: |
+      snapcraftctl build
+      mkdir -pv $SNAPCRAFT_PART_INSTALL/gnome-platform
 
   # my-font-part:
   #   # this part doesn't help fix the square rectangle problem
