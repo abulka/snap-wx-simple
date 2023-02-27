@@ -14,14 +14,18 @@ architectures:
 apps:
   snap-wx-simple:
     command: bin/rubber
-    plugs: [home, network, network-bind, removable-media, pulseaudio]
-  genx:
-    # another guess, more plugs, and set up environment
-    command: bin/rubber
+    # plugs: [home, network, network-bind, removable-media, pulseaudio]
     plugs: [desktop, x11, audio-playback, desktop-legacy, unity7, network, home, gsettings, opengl]
     environment:
       LANG: en_US.UTF-8
-      LC_ALL: en_US.UTF-8    
+      LC_ALL: en_US.UTF-8  
+  # genx:
+  #   # another guess, more plugs, and set up environment
+  #   command: bin/rubber
+  #   plugs: [desktop, x11, audio-playback, desktop-legacy, unity7, network, home, gsettings, opengl]
+  #   environment:
+  #     LANG: en_US.UTF-8
+  #     LC_ALL: en_US.UTF-8    
   python-v:
       command: bin/python3 -V
 
