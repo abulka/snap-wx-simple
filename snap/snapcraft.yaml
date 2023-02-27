@@ -26,7 +26,7 @@ parts:
     plugin: python
     source: .
     python-packages:
-        # - wheel # genx does this
+        - wheel # genx does this
         - https://extras.wxpython.org/wxPython4/extras/linux/gtk3/ubuntu-20.04/wxPython-4.2.0-cp38-cp38-linux_x86_64.whl
         - wxasync
     stage-packages:
@@ -80,17 +80,17 @@ parts:
       snapcraftctl build
       mkdir -pv $SNAPCRAFT_PART_INSTALL/gnome-platform
 
-  # my-font-part:
-  #   # this part doesn't help fix the square rectangle problem
-  #   plugin: nil
-  #   stage-packages:
-  #     - fonts-noto-color-emoji
-  #     - fonts-dejavu
-  #     - fontconfig
-  #     - fontconfig-config
-  #     - fonts-liberation
-  #     - ttf-ubuntu-font-family
-  #     - ttf-mscorefonts-installer
+  my-font-part:
+    # this part doesn't help fix the square rectangle problem
+    plugin: nil
+    stage-packages:
+      - fonts-noto-color-emoji
+      - fonts-dejavu
+      - fontconfig
+      - fontconfig-config
+      - fonts-liberation
+      - ttf-ubuntu-font-family
+      - ttf-mscorefonts-installer
   
 # this done by genx, maybe it will help with the font problem
 plugs:
