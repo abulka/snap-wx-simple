@@ -1,14 +1,66 @@
 # snap-wx-simple
 
-Building a wxpython app using snapcraft
+Building a wxpython app using snapcraft, ensuring that `setup.py` is configured - which the snapcraft Python plugin requires.
 
-also...
+Also allows you to use a github actions workflow to build the snap.  Uses the official github actions snapcraft action.
 
-An experiment re checking out not only this project, but another project, then building an exe from combining the two.
+# Notes
 
-Then building with snapcraft using the new simpler way which relies on leveraging setup.py
+## Rectangle text chars at runtime
 
-# scraps
+Turns out the solution is to add the 'desktop' interface to the snapcraft.yaml file.
+
+```yaml
+apps:
+  snap-wx-simple:
+    command: bin/rubber
+    # plugs: [home, network, network-bind, removable-media, pulseaudio]
+    # plugs: [desktop, x11, audio-playback, desktop-legacy, unity7, network, home, gsettings, opengl]
+    plugs: [home, network, network-bind, removable-media, pulseaudio, desktop]
+
+```
+
+| Interface | First line | Second line | Description |
+| --- | --- | --- | --- |
+| home | Yes | Yes | Allows access to non-hidden files in user's home directory |
+| network | Yes | Yes | Allows access to network resources |
+| network-bind | Yes | No  | Allows binding to network ports |
+| removable-media | Yes  | No  | Allows access to mounted removable storage devices |
+| pulseaudio  | Yes  | No  | Allows access to sound server for playback and recording |
+| desktop  | No  | Yes  | Allows access to basic graphical desktop resources such as **fonts** and themes <br> 😏<span style="color: green;">the lack of this 'desktop' entry caused rectangle chars at runtime</span> |
+| x11  	| No 	| Yes	| Allows communication with X server for graphical display |
+| audio-playback	| No	| Yes	| Allows playing audio on pulseaudio or ALSA sound servers |
+| desktop-legacy		| No	| Yes	| Allows legacy methods of accessing graphical desktop resources such as GTK2 or Qt4 libraries |
+| unity7			| No	| Yes	| Allows integration with Unity7 desktop environment such as indicators, notifications, etc.|
+| gsettings			| No   	| Yes   | Allows reading and writing settings from GSettings configuration system|
+| opengl			| No   	| Yes   | Allows access to OpenGL hardware acceleration|
+
+
+## Missing packages
+
+Whilst snapcraft is building the snap, it will report missing packages.  These can be added to the snapcraft.yaml file.  However you will need to transform from the `.so` file name of a file shipped inside a deb to the proper package name. This can be done with the `apt-file` command.
+
+If the name is rejected by snapcraft 
+https://forum.snapcraft.io/t/package-not-found/26634 
+this is not a package name but a file name of a file shipped inside a deb …
+you can use apt-file to search for deb package names the file belongs to:
+```
+$ sudo apt install apt-file
+$ sudo apt-file update
+$ apt-file search libX11.so.6
+libx11-6: /usr/lib/x86_64-linux-gnu/libX11.so.6
+libx11-6: /usr/lib/x86_64-linux-gnu/libX11.so.6.3.0
+```
+before the colon you find the package name to use with your stage-packages, in the above example `libx11-6`.
+
+You must do this for each file listed in the error message.
+
+There may be additional packages that need to be added to the snapcraft.yaml file. Good luck guessing which ones - they may be reported on the terminal when you run the snap from the command line.
+
+All these missing packages are due to the needs of `wxpython`, not Python itself.
+
+Example of original error message from snapcraft:
+```yaml
 
 + snapcraftctl prime
 The 'build-the-python-stuff-please' part is missing libraries that are not included in the snap or base. They can be satisfied by adding the following entry for this part
@@ -41,199 +93,24 @@ This part is missing libraries that cannot be satisfied with any available stage
 - libwayland-egl.so.1
 - libwebkit2gtk-4.0.so.37
 These dependencies can be satisfied via additional parts or content sharing. Consider validating configured filesets if this dependency was built.
+```
 
+## Pulseaudio
 
-## scraps
+I had lots of problems with pulseaudio.  I had to add the `pulseaudio` interface to the snapcraft.yaml file.  I also had to add the following to the snapcraft.yaml file:
 
-inside the container I found the pulse library
+```yaml
+environment:
+  LD_LIBRARY_PATH: $LD_LIBRARY_PATH:/snap/snap-wx-simple/current/usr/lib/x86_64-linux-gnu/pulseaudio
+```
+
+I also added various pulseaudio packages to the stage-packages section of the snapcraft.yaml file.
+
+In debugging, inside the lxd container used by snapcraft (which I entered using `lxc start snapcraft-snap-wx-simple` then `lxc exec snapcraft-snap-wx-simple -- /bin/bash`) I found the pulse library
+```
 sudo find / -name libpulsecommon-13.99.so
 /root/prime/usr/lib/x86_64-linux-gnu/pulseaudio/libpulsecommon-13.99.so
 /root/stage/usr/lib/x86_64-linux-gnu/pulseaudio/libpulsecommon-13.99.so
 /root/parts/build-the-python-stuff-please/install/usr/lib/x86_64-linux-gnu/pulseaudio/libpulsecommon-13.99.so
-
-/usr/lib/x86_64-linux-gnu/pulseaudio/libpulsecommon-13.99.so
-/x4/usr/lib/x86_64-linux-gnu/pulseaudio
-
-
-environment:
-  LD_LIBRARY_PATH: $LD_LIBRARY_PATH:/snap/snap-wx-simple/x4/usr/lib/x86_64-linux-gnu/pulseaudio
-environment:
-  LD_LIBRARY_PATH: $LD_LIBRARY_PATH:/snap/snap-wx-simple/current/usr/lib/x86_64-linux-gnu/pulseaudio
-                                                                /usr/lib/x86_64-linux-gnu/pulseaudio/libpulsecommon-13.99.so
-
-
-
-
-
-
-# OLD NOTES FROM ANOTHER PROJECT - IGNORE
-
-On github, If we check out this project into `mainproj` then the other project into 
-
-- subdir/mainproj/
-- relationship_manager/
-
-The reason for `subdir` is to locate this main project relative to `relationship_manager` the way it is on my development machine.
-
-Then from 
-
-    mainproj/src/simple.py
-
-we should be able to find the package
-
-    relationship_manager/relmgr
-
-as long as cwd when running is 
-
-    mainproj/src/
-    
-and as long as the PYTHONPATH is set to
-
-    PYTHONPATH="../../../relationship-manager/"
-
-
-Yikes, a bit convoluted. Would be easier to just import `relationship_manager` as a package using pip.
-
-# Pyinstaller
-
-Can build this OK, as I do it locally.  Spec file needs to be
-
-```python
-a = Analysis(['src/rubber_band_async.py'],
-             pathex=[
-                 '../../relationship-manager/',
-             ], 
-
 ```
-
-for Pyinstaller to find everything.
-
-# Tags
-
-In the workflow file:
-
-- To trigger the workflow on each push, branches: [ main ]
-- To trigger the workflow on push of tags beginning with v, tags: ['v*']
-
-e.g.
-
-```yml
-name: multi project wxpython app built on mac
-on:
-  push:
-    # branches: [ main ]
-    tags: ['v*']
-```
-
-## To trigger a github actions workflow run
-
-when you have set up workflow to run on tags eing pushed,
-
-    git tag v1.0
-    git push origin v1.0
-
-or better, use an annotated tag (see explanation below)
-
-    git tag -a v1.0
-    git push --follow-tags
-
-## To trigger via vscode commands
-In vscode, creating a tag seems only to create a *lightweight* tag, unless you add a description.
-
-- in vscode running the command `Git: Create Tag` - note entering a `message` when creating a tag via the UI will create an annotated tag
-- in vsode running the command `Git: Push (follow tags)` 
-
-## An aside on tags...
-
-though interesting that `electron-actions1` has
-
-    npm version patch
-    git push --follow-tags
-
-without an explicit tag push.  Why does `--follow-tags` work there but not here?
-
-> The new " --follow-tags " option tells " git push " to push relevant annotated tags when pushing branches out. That won't push all the local tags though, only the one referenced by commits which are pushed with the git push .
-
-Huh?
-
-## Briliant explanation
-
-https://vivaxyblog.github.io/2019/08/02/git-tag-and-push-git-tag.html
-
-says
-
-> Git supports two types of tags: lightweight and annotated.
-
-> A lightweight tag is very much like a branch that doesn’t change — it’s just a pointer to a specific commit.
-
-> Annotated tags, however, are stored as full objects in the Git database. They’re checksummed; contain the tagger name, email, and date; have a tagging message; and can be signed and verified with GNU Privacy Guard (GPG). It’s generally recommended that you create annotated tags so you can have all this information; but if you want a temporary tag or for some reason don’t want to keep the other information, lightweight tags are available too.
-
-    git tag <tagname>                 => lightweight tag
-    git tag -a <tagname>              => annotated tag, will prompt for mesage
-    git tag -a -m <msg> <tagname>     => annotated tag
-    git tag -m <msg> <tagname>        => annotated tag
-
-There are two ways of pushing tags:
-
-- git push --follow-tags
-- git push --tags
-
-> `git push --follow-tags`
-> 
-> It pushes both commits and only tags that are both:
-> 
-> *   annotated
-> *   reachable (an ancestor) from the pushed commits
-> 
-> This is sane because:
-> 
-> *   you should only push annotated tags to the remote, and keep lightweight tags for local development to avoid tag clashes. See also: [What is the difference between an annotated and unannotated tag?](https://stackoverflow.com/questions/11514075/what-is-the-difference-between-an-annotated-and-unannotated-tag)
-> *   it won’t push annotated tags on unrelated branches
-> 
-> It is for those reasons that –tags should be avoided.
-
-
-How do we push tags? `git push --follow-tags`!
-
-### In Conclusion
-
-When you can’t push tags, you probably:
-
-- are using a lightweight tag, and `git push --follow-tags`.
-
-While you can push tags, you probably:
-
-- are using a lightweight tag, and `git push --tags`. (Not recommended!)
-- are using an annotated tag, and `git push --follow-tags`.
-
-## Andy Summary of tags:
-Two types of tags, lightweight (normal) and annotated. 
-
-Use lightweight for local, and don't pollute the remote with these.
-
-For remote use pass `-a` when creating a tag, 
-
-    git tag -a <tagname>              => annotated tag, will prompt for mesage
-    git tag -a -m <msg> <tagname>     => annotated tag
-
-and it will be pushed when you
-
-    git push --follow-tags
-
-
-# action-gh-release@v1 - wildcards
-
-When referring to artifacts that are really directories (e.g. mac .app) you might get an error
-🤔 rubber-band-macos-v1.85,rubber-band-windows-v1.85 not include valid file. 
-This is because these are actually artifact directories! 
-You need to add `/*` to grab the directory contents. E.g. this works ok:
-```yml
-- name: Release
-    uses: softprops/action-gh-release@v1
-    env:
-    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    with:
-    files: |
-        rubber-band-macos-${{ env.TAG }}/*
-        rubber-band-windows-${{ env.TAG }}/*
-```
+which helped me to find the correct path to add to the LD_LIBRARY_PATH environment variable.
