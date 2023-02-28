@@ -13,9 +13,7 @@ architectures:
 apps:
   snap-wx-simple:
     command: bin/rubber
-    # plugs: [home, network, network-bind, removable-media, pulseaudio]
-    # plugs: [desktop, x11, audio-playback, desktop-legacy, unity7, network, home, gsettings, opengl]
-    plugs: [home, network, network-bind, removable-media, pulseaudio, desktop]
+    plugs: [home, network, network-bind, removable-media, audio-playback, desktop]
     environment:
       LANG: en_US.UTF-8
       LC_ALL: en_US.UTF-8 
@@ -23,6 +21,9 @@ apps:
       command: bin/python3 -V
 
 environment:
+  # Whilst usr/lib/x86_64-linux-gnu is in the LD_LIBRARY_PATH by default, and
+  # its subdirectories should also be searched, libpulsecommon-13.99.so is not found
+  # unless the full path is specified.
   LD_LIBRARY_PATH: $LD_LIBRARY_PATH:/snap/snap-wx-simple/current/usr/lib/x86_64-linux-gnu/pulseaudio
 
 parts:
@@ -62,5 +63,3 @@ parts:
       - nxagent
       - primus-libs
       - libpulse0
-      - libpulse-dev
-      - pulseaudio

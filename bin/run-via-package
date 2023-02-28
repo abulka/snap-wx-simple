@@ -1,0 +1,2 @@
+echo assumes you have built and installed the package - see build-package script
+rubber

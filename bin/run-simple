@@ -1,3 +1,0 @@
-cd src
-PYTHON=python3
-PYTHONPATH="../../../relationship-manager/" $PYTHON simple.py
