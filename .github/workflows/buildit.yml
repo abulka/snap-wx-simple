@@ -1,9 +1,13 @@
 name: building a simple wxpython app using snapcraft
 on:
   push:
-    branches: [ main ]
-    # tags: ['v*', 'pre*']
+    # branches: [ main ]
+    tags: ['v*', 'pre*']
 
+    # To trigger a build when above is set to tag
+    # git tag --l
+    # git tag -a v1.nn
+    # git push --follow-tags
 jobs:
   build:
     runs-on: ubuntu-latest
