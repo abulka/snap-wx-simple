@@ -10,6 +10,9 @@ from asyncio.events import get_event_loop
 
 ASYNC_VERSION = True
 
+from common.blah import BLAH
+print("BLAH", BLAH)
+
 # import gui
 # print("gui.__file__", gui.__file__)
 # from gui.settings import FOUND_RELMGR
