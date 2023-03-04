@@ -6,7 +6,7 @@ setup(
     version='1.0.0',
     url='https://github.com/yourusername/myprogram',
     author='Andy Bulka',
-    author_email='youremail@example.com',
+    author_email='abulka@gmail.com',
 
     py_modules=['rubber_band_async'],
     # py_modules=['src.rubber_band_async'],
